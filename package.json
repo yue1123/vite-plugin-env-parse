@@ -1,0 +1,44 @@
+{
+  "name": "vite-plugin-env-parse",
+  "version": "1.0.0",
+  "description": "Parse env string values to correct values, not all values are strings. And automatically generate ImportMetaEnv",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "module": "dist/index.js",
+  "scripts": {
+    "dev": "pnpm clean && tsup src/index.ts  --watch --dts --format cjs",
+    "build": "pnpm clean && tsup src/index.ts --dts --env.NODE_ENV production --format cjs && pnpm clean-up",
+    "clean": "rimraf dist",
+    "clean-up": "rimraf tsconfig.tsbuildinfo",
+    "example:dev": "pnpm run -C example dev",
+    "example:build": "pnpm run -C example build",
+    "example:preview": "pnpm run -C example preview"
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "vite",
+    "vite-plugin",
+    "plugin",
+    "env",
+    "env-parse",
+    "string convert",
+    "typecast"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/html-minifier": "^4.0.2",
+    "@types/node": "^18.15.0",
+    "@types/uglify-js": "^3.17.1",
+    "prettier": "^2.8.7",
+    "rimraf": "^4.4.0",
+    "tsup": "^6.6.3",
+    "typescript": "^4.9.5",
+    "vite": "^4.2.0"
+  },
+  "peerDependencies": {
+    "vite": "*"
+  }
+}
