@@ -84,7 +84,7 @@ function generateEnvInterface(env: Recordable) {
     interfaceItem.push(`${envKey}: ${typeMap[valueType] || 'any'}`)
   }
   return `interface ImportMetaEnv {
-    // Auto generate by env parse
+  // Auto generate by env parse
   ${interfaceItem.join('\n  ')}
 }`
 }
