@@ -116,9 +116,7 @@ export function envParse(options: EnvParseOptions = {}): Plugin {
     enforce: 'post',
     configResolved(config) {
       try {
-        console.log(config.env)
         env = parseEnv(config.env, options)
-        console.log(env)
         writeEnvInterface(generateEnvInterface(env), options)
         Object.defineProperty(config, 'env', {
           get() {
