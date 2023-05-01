@@ -1,6 +1,6 @@
 {
   "name": "vite-plugin-env-parse",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Parse env string values to correct values, not all values are strings. And automatically generate ImportMetaEnv",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -15,6 +15,7 @@
     "example:preview": "pnpm run -C example preview"
   },
   "files": [
+    "screenshots",
     "dist"
   ],
   "keywords": [
