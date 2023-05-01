@@ -28,7 +28,7 @@ type SupportType = 'string' | 'number' | 'boolean' | 'object' | 'array'
 export type CustomTransformer = (key: string, value: string) => string
 function errorLog(content: string) {
   console.log('\n')
-  console.log('\x1b[31m%s%s\x1b[0m', '✘ [spa-loading] - ', content)
+  console.log('\x1b[31m%s%s\x1b[0m', '✘ [env-parse] - ', content)
   console.log()
 }
 function parseEnv(env: Recordable, options: EnvParseOptions) {
