@@ -96,9 +96,15 @@ function writeEnvInterface(envInterface: string, options: EnvParseOptions) {
   const importMetaEnvRegexp = /interface ImportMetaEnv\s*\{[\s\S]*?\}/g
 
   if (fs.existsSync(_dtsPath)) {
-    // replace
     const fileContent = fs.readFileSync(_dtsPath, { encoding: 'utf-8' })
-    envInterface = fileContent.replace(importMetaEnvRegexp, envInterface)
+    if (importMetaEnvRegexp.test(fileContent)) {
+      // replace
+      envInterface = fileContent.replace(importMetaEnvRegexp, envInterface)
+    } else {
+      // append
+      envInterface = `${fileContent}
+${envInterface}`
+    }
   }
   fs.writeFileSync(_dtsPath, envInterface)
 }
