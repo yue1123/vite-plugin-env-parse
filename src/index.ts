@@ -115,7 +115,7 @@ export function envParse(options: EnvParseOptions = {}): Plugin {
     exclude: [],
     dtsPath: 'env.d.ts'
   }
-  options = Object.assign(options, defaultOptions)
+  options = Object.assign(defaultOptions, options)
   let env: Record<string, any> | null = null
   return {
     name: 'vite-plugin-env-parse',
