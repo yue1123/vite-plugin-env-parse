@@ -1,7 +1,8 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import type { Plugin } from 'vite'
-
+import { type Recordable } from './types'
+import { parseEnvComment } from './parseEnvComment'
 export interface EnvParseOptions {
   /**
    * exclude parse env keys
@@ -22,7 +23,7 @@ export interface EnvParseOptions {
    */
   dtsPath?: string
 }
-type Recordable<K extends string = string, T = any> = Record<K, T>
+
 type StringBoolean = 'true' | 'false'
 type SupportType = 'string' | 'number' | 'boolean' | 'object' | 'array'
 export type CustomTransformer = (key: string, value: string) => string
@@ -65,26 +66,33 @@ function parseEnv(env: Recordable, options: EnvParseOptions) {
 
   return parsedRes
 }
-function generateEnvInterface(env: Recordable) {
-  let interfaceItem = []
+function generateEnvInterface(env: Recordable, commentRecord: Recordable<string, string>) {
+  let interfaceItem: string[] = []
   const excludeKey = ['MODE', 'BASE_URL', 'PROD', 'DEV', 'SSR']
   const typeMap: Recordable<SupportType> = {
     boolean: 'boolean',
     string: 'string',
     number: 'number',
     array: 'any[]',
-    object: 'Record<string,any>'
+    object: 'Record<string, any>'
   }
   for (const envKey of Object.keys(env)) {
     if (excludeKey.includes(envKey)) continue
     const value = env[envKey]
     let valueType = typeof value as SupportType
     valueType = valueType === 'object' ? (Array.isArray(value) ? 'array' : valueType) : valueType
-
-    interfaceItem.push(`${envKey}: ${typeMap[valueType] || 'any'}`)
+    let comment = commentRecord[envKey]
+    interfaceItem.push(
+      comment
+        ? `/**
+   * ${comment}
+   */
+  ${envKey}: ${typeMap[valueType] || 'any'}`
+        : `${envKey}: ${typeMap[valueType] || 'any'}`
+    )
   }
   return `interface ImportMetaEnv {
-  // Auto generate by env parse
+  // Auto generate by env-parse
   ${interfaceItem.join('\n  ')}
 }`
 }
@@ -94,7 +102,6 @@ function writeEnvInterface(envInterface: string, options: EnvParseOptions) {
   const root = process.cwd()
   const _dtsPath = path.resolve(root, dtsPath!)
   const importMetaEnvRegexp = /interface ImportMetaEnv\s*\{[\s\S]*?\}/g
-
   if (fs.existsSync(_dtsPath)) {
     const fileContent = fs.readFileSync(_dtsPath, { encoding: 'utf-8' })
     if (importMetaEnvRegexp.test(fileContent)) {
@@ -115,20 +122,26 @@ export function envParse(options: EnvParseOptions = {}): Plugin {
     exclude: [],
     dtsPath: 'env.d.ts'
   }
-  options = Object.assign(defaultOptions, options)
-  let env: Record<string, any> | null = null
+  options = Object.assign(defaultOptions, options) as Required<EnvParseOptions>
+  let parsedEnv: Record<string, any> | null = null
   return {
     name: 'vite-plugin-env-parse',
     enforce: 'post',
     configResolved(config) {
+      const { env, envDir } = config
+      const envMode = env.MODE
+      if (envMode !== 'development') return
+      const filePath = path.resolve(envDir, `.env.${envMode}`)
+      const envFile = fs.existsSync(filePath) && fs.readFileSync(filePath, 'utf-8')
+      const commentRecord = envFile ? parseEnvComment(envFile) : {}
       try {
-        env = parseEnv(config.env, options)
-        writeEnvInterface(generateEnvInterface(env), options)
+        parsedEnv = parseEnv(config.env, options)
         Object.defineProperty(config, 'env', {
           get() {
-            return env
+            return parsedEnv
           }
         })
+        writeEnvInterface(generateEnvInterface(parsedEnv, commentRecord), options)
       } catch (error: any) {
         errorLog(error.message || error)
       }

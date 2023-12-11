@@ -1,23 +1,20 @@
 {
   "compilerOptions": {
     "target": "es2020",
-    "module": "esnext",
+    "module": "ESNext",
     "moduleResolution": "node",
-    "esModuleInterop": true,
     "strict": true,
+    "esModuleInterop": true,
     "skipLibCheck": true,
     "noUnusedLocals": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "preserveValueImports": true,
     "strictNullChecks": true,
-    "composite": true,
     "types": ["node"],
-    "rootDir": "./src",
-    "noEmit": false,
-    "outDir": "dist",
-    "declarationDir": "dist",
-    "declaration": true
+    "baseUrl": "./",
+    "rootDir": "./",
+    "noEmit": false
   },
-  "exclude": ["dist", "node_modules", "test", "example"]
+  "include": ["src/**/*.ts"],
+  "exclude": ["dist/**/*", "node_modules", "test/**/*", "example/**/*"]
 }
