@@ -8,7 +8,7 @@
 
 Parse env string values to correct values, not all values are strings. And automatically generate ImportMetaEnv
 
-![demo](./screenshots/demo.png)
+![Alt text](./screenshots/showcase.png)
 
 ## 📦 Install
 
