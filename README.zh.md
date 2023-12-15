@@ -8,7 +8,8 @@
 
 将 env 字符串值解析为正确的值，而不是所有值都是字符串。并且自动生成 ImportMetaEnv。
 
-![Alt text](./screenshots/showcase.png)
+
+![showcase](./screenshots/showcase.png)
 
 ## 📦 Install
 
