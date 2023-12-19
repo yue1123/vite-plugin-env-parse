@@ -1,8 +1,10 @@
 import fs from 'node:fs'
 import path from 'node:path'
-import type { Plugin } from 'vite'
+import { type Plugin, type ResolvedConfig } from 'vite'
 import { type Recordable } from './types'
 import { parseEnvComment } from './parseEnvComment'
+import { isHTMLRequest, isCSSRequest, isNonJsRequest } from './utils'
+
 export interface EnvParseOptions {
   /**
    * exclude parse env keys
@@ -123,25 +125,56 @@ export function envParse(options: EnvParseOptions = {}): Plugin {
     dtsPath: 'env.d.ts'
   }
   options = Object.assign(defaultOptions, options) as Required<EnvParseOptions>
-  let parsedEnv: Record<string, any> | null = null
+  let parsedEnv: Record<string, any>
+  let isBuild = false
+  let userConfig: ResolvedConfig
+  const importMetaEnvReg = /(?<![\'\"])import\.meta\.env\.([\w-]+)/gi
+  const importObjReg = /import\.meta\.env/gi
   return {
     name: 'vite-plugin-env-parse',
-    enforce: 'post',
+    enforce: 'pre',
+    transform(code, id) {
+      if (
+        !isBuild ||
+        // exclude html, css and static assets for performance
+        isHTMLRequest(id) ||
+        isCSSRequest(id) ||
+        isNonJsRequest(id) ||
+        userConfig.assetsInclude(id)
+      ) {
+        return
+      }
+      if (code.includes('import.meta.env')) {
+        code = code
+          .replace(importMetaEnvReg, (all, envKey) => {
+            let val = parsedEnv[envKey]
+            if (typeof val !== 'undefined') {
+              return typeof val === 'string' ? `'${val}'` : JSON.stringify(val)
+            }
+            return all
+          })
+          .replace(importObjReg, () => JSON.stringify(parsedEnv))
+        return code
+      }
+    },
     configResolved(config) {
-      const { env, envDir } = config
-      const envMode = env.MODE
-      if (envMode !== 'development') return
-      const filePath = path.resolve(envDir, `.env.${envMode}`)
-      const envFile = fs.existsSync(filePath) && fs.readFileSync(filePath, 'utf-8')
-      const commentRecord = envFile ? parseEnvComment(envFile) : {}
       try {
+        const { mode, envDir, root } = config
+        const filePath = path.resolve(envDir || root, `.env.${mode}`)
+        isBuild = config.command === 'build'
+        userConfig = config
         parsedEnv = parseEnv(config.env, options)
-        Object.defineProperty(config, 'env', {
-          get() {
-            return parsedEnv
-          }
-        })
-        writeEnvInterface(generateEnvInterface(parsedEnv, commentRecord), options)
+        if (!isBuild) {
+          const envFileContent = fs.existsSync(filePath) && fs.readFileSync(filePath, 'utf-8')
+          const commentRecord = envFileContent ? parseEnvComment(envFileContent) : {}
+          writeEnvInterface(generateEnvInterface(parsedEnv, commentRecord), options)
+          Object.defineProperty(config, 'env', {
+            get() {
+              return parsedEnv
+            }
+          })
+          return
+        }
       } catch (error: any) {
         errorLog(error.message || error)
       }
