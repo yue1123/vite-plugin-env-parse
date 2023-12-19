@@ -34,8 +34,12 @@ function errorLog(content: string) {
   console.log('\x1b[31m%s%s\x1b[0m', '✘ [env-parse] - ', content)
   console.log()
 }
-function parseEnv(env: Recordable, options: EnvParseOptions) {
-  const { parseJson, exclude, customParser } = options
+/**
+ * parse loaded env
+ * @param env env string record
+ */
+function parseEnv(env: Recordable, options: EnvParseOptions = {}) {
+  const { parseJson = true, exclude = [], customParser } = options
   const parsedRes: Recordable = {}
   const booleanValueMap: Record<StringBoolean, boolean> = {
     true: true,
@@ -43,7 +47,7 @@ function parseEnv(env: Recordable, options: EnvParseOptions) {
   }
   for (const envKey of Object.keys(env)) {
     let value = env[envKey]
-    if (typeof value === 'string' || !exclude!.includes(envKey)) {
+    if (typeof value === 'string' || !exclude.includes(envKey)) {
       if (value === 'true' || value === 'false') {
         // boolean
         value = booleanValueMap[value as StringBoolean]
@@ -61,7 +65,7 @@ function parseEnv(env: Recordable, options: EnvParseOptions) {
       }
     }
     if (customParser) {
-      value = customParser(envKey, value) || value
+      value = (customParser && customParser(envKey, value)) || value
     }
     parsedRes[envKey] = value
   }
@@ -186,7 +190,6 @@ export function envParse(options: EnvParseOptions = {}): Plugin {
             ...modeEnvCommentRecord,
             ...modeLocalCommentRecord
           }
-          console.log(parsedEnv, envCommentRecord)
           writeEnvInterface(generateEnvInterface(parsedEnv, envCommentRecord), options)
           Object.defineProperty(config, 'env', {
             get() {
@@ -201,3 +204,4 @@ export function envParse(options: EnvParseOptions = {}): Plugin {
     }
   }
 }
+export { parseEnv as parseLoadedEnv }
