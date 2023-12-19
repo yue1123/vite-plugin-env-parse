@@ -159,15 +159,35 @@ export function envParse(options: EnvParseOptions = {}): Plugin {
     },
     configResolved(config) {
       try {
-        const { mode, envDir, root } = config
-        const filePath = path.resolve(envDir || root, `.env.${mode}`)
         isBuild = config.command === 'build'
         userConfig = config
         parsedEnv = parseEnv(config.env, options)
         if (!isBuild) {
-          const envFileContent = fs.existsSync(filePath) && fs.readFileSync(filePath, 'utf-8')
-          const commentRecord = envFileContent ? parseEnvComment(envFileContent) : {}
-          writeEnvInterface(generateEnvInterface(parsedEnv, commentRecord), options)
+          // gen dts
+          const { mode, envDir, root } = config
+          const modeFilePath = path.resolve(envDir || root, `.env.${mode}`)
+          const modeLocalFilePath = path.resolve(envDir || root, `.env.${mode}.local`)
+          const localEnvFilePath = path.resolve(envDir || root, `.env.local`)
+          const baseEnvFilePath = path.resolve(envDir || root, `.env`)
+          const modeEnvFileContent = fs.existsSync(modeFilePath) && fs.readFileSync(modeFilePath, 'utf-8')
+          const modeLocalEnvFileContent =
+            fs.existsSync(modeLocalFilePath) && fs.readFileSync(modeLocalFilePath, 'utf-8')
+          const localEnvFileContent = fs.existsSync(localEnvFilePath) && fs.readFileSync(localEnvFilePath, 'utf-8')
+          const baseEnvFileContent = fs.existsSync(baseEnvFilePath) && fs.readFileSync(baseEnvFilePath, 'utf-8')
+
+          const modeEnvCommentRecord = modeEnvFileContent ? parseEnvComment(modeEnvFileContent) : {}
+          const modeLocalCommentRecord = modeLocalEnvFileContent ? parseEnvComment(modeLocalEnvFileContent) : {}
+          const localEnvCommentRecord = localEnvFileContent ? parseEnvComment(localEnvFileContent) : {}
+          const baseEnvCommentRecord = baseEnvFileContent ? parseEnvComment(baseEnvFileContent) : {}
+
+          const envCommentRecord = {
+            ...baseEnvCommentRecord,
+            ...localEnvCommentRecord,
+            ...modeEnvCommentRecord,
+            ...modeLocalCommentRecord
+          }
+          console.log(parsedEnv, envCommentRecord)
+          writeEnvInterface(generateEnvInterface(parsedEnv, envCommentRecord), options)
           Object.defineProperty(config, 'env', {
             get() {
               return parsedEnv

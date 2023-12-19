@@ -8,18 +8,19 @@ export function parseEnvComment(content: string) {
 
   const commentReg = /^\s*#\s*(.*)\s*/
   const keyReg = /(?:^|^)\s*(?:export\s+)?([\w.-]+)(?:\s*=\s*?|:\s+?)/
+  const startMultiSharpReg = /^\#+/
   let commentString: string[] = []
   lines.forEach((line) => {
     if (commentReg.test(line)) {
       // Comment line
-      const comment = line.replace(commentReg, '$1')
+      const comment = line.replace(commentReg, '$1').replace(startMultiSharpReg, '').trim()
       commentString.push(comment)
     } else if (keyReg.test(line)) {
       // Key-value pair line
       const matched = line.match(keyReg)
       const key = matched ? matched[1] : ''
 
-      key && (res[key] = commentString.join('\n   * '))
+      key && commentString.length && (res[key] = commentString.join('\n   * '))
       commentString.length = 0
     } else if (commentString.length) {
       // Matches a comment but the next line is not a comment or a key-value pair
