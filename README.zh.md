@@ -38,6 +38,23 @@ export default {
 
 ## API
 
+### Method
+在 `vite config` 文件中可以使用 `parseLoadedEnv` 工具函数对 env 环境变量值解析.
+
+```ts
+// vite.config.ts
+import { parseLoadedEnv } from 'vite-plugin-env-parse'
+import { defineConfig, loadEnv } from 'vite'
+
+export default defineConfig(({ mode }) => {
+  console.log('vite.config.ts', parseLoadedEnv(loadEnv(mode, './')))
+
+  return {
+    plugins: [envParse({})]
+  }
+})
+```
+
 ### EnvParseOptions
 
 | 属性名       | 类型                | 描述                                                    |

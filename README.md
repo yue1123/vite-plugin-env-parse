@@ -37,6 +37,23 @@ export default {
 
 ## API
 
+### Method
+The `parseLoadedEnv` utility function can be used in the `vite config` file to parse the env environment variable values.
+
+```ts
+// vite.config.ts
+import { parseLoadedEnv } from 'vite-plugin-env-parse'
+import { defineConfig, loadEnv } from 'vite'
+
+export default defineConfig(({ mode }) => {
+  console.log('vite.config.ts', parseLoadedEnv(loadEnv(mode, './')))
+
+  return {
+    plugins: [envParse({})]
+  }
+})
+```
+
 ### EnvParseOptions
 
 | Property       | Type                | Description                                                                        |

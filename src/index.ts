@@ -162,11 +162,12 @@ export function envParse(options: EnvParseOptions = {}): Plugin {
       }
     },
     configResolved(config) {
+      const { command, env } = config
       try {
-        isBuild = config.command === 'build'
+        isBuild = command === 'build'
         userConfig = config
         parsedEnv = parseEnv(config.env, options)
-        if (!isBuild) {
+        if (!isBuild && env.MODE === 'development') {
           // gen dts
           const { mode, envDir, root } = config
           const modeFilePath = path.resolve(envDir || root, `.env.${mode}`)
