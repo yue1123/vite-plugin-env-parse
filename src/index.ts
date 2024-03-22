@@ -158,7 +158,10 @@ export function envParse(options: EnvParseOptions = {}): Plugin {
             return all
           })
           .replace(importObjReg, () => JSON.stringify(parsedEnv))
-        return code
+        return {
+          code,
+          map: null
+        }
       }
     },
     configResolved(config) {

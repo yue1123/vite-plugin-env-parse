@@ -5,6 +5,9 @@ import { envParse, parseLoadedEnv } from 'vite-plugin-env-parse'
 export default defineConfig(({ mode }) => {
   console.log('vite.config.ts', parseLoadedEnv(loadEnv(mode, './')))
   return {
-    plugins: [vue(), envParse({})]
+    plugins: [vue(), envParse({})],
+    build: {
+      sourcemap: true
+    }
   }
 })
