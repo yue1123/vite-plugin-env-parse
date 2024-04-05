@@ -97,6 +97,7 @@ function generateEnvInterface(env: Recordable, commentRecord: Recordable<string,
         : `${envKey}: ${typeMap[valueType] || 'any'}`
     )
   }
+  if (!interfaceItem.length) return
   return `interface ImportMetaEnv {
   // Auto generate by env-parse
   ${interfaceItem.join('\n  ')}
@@ -194,7 +195,8 @@ export function envParse(options: EnvParseOptions = {}): Plugin {
             ...modeEnvCommentRecord,
             ...modeLocalCommentRecord
           }
-          writeEnvInterface(generateEnvInterface(parsedEnv, envCommentRecord), options)
+          const envInterface = generateEnvInterface(parsedEnv, envCommentRecord)
+          envInterface && writeEnvInterface(envInterface, options)
           Object.defineProperty(config, 'env', {
             get() {
               return parsedEnv
