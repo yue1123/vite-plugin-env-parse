@@ -25,10 +25,14 @@
     "env",
     "env-parse",
     "string convert",
-    "typecast"
+    "typecast",
+    "dotEnv",
+    "import"
   ],
-  "author": "",
-  "license": "ISC",
+  "author": "dh <2572458699@qq.com>",
+  "homepage": "https://github.com/yue1123/vite-plugin-env-parse/#readme",
+  "bugs": "https://github.com/yue1123/vite-plugin-env-parse/issues",
+  "license": "MIT",
   "devDependencies": {
     "@rollup/plugin-typescript": "^11.1.3",
     "@types/node": "^18.15.0",
