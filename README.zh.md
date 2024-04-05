@@ -4,10 +4,9 @@
 ![npm](https://img.shields.io/npm/dm/vite-plugin-env-parse?style=flat-square)
 ![GitHub](https://img.shields.io/github/license/yue1123/vite-plugin-env-parse?style=flat-square)
 
-[简体中文](./README.zh.md)
+[English](./README.md)
 
 将 env 字符串值解析为正确的值，而不是所有值都是字符串。并且自动生成 ImportMetaEnv。
-
 
 ![showcase](./screenshots/showcase.png)
 
@@ -36,9 +35,12 @@ export default {
 }
 ```
 
+[Example](./example)
+
 ## API
 
 ### Method
+
 在 `vite config` 文件中可以使用 `parseLoadedEnv` 工具函数对 env 环境变量值解析.
 
 ```ts
