@@ -87,17 +87,17 @@ function generateEnvInterface(env: Recordable, commentRecord: Recordable<string,
     const value = env[envKey]
     let valueType = typeof value as SupportType
     valueType = valueType === 'object' ? (Array.isArray(value) ? 'array' : valueType) : valueType
-    let comment = commentRecord[envKey]
-    interfaceItem.push(
-      comment
-        ? `/**
-   * ${comment}
+    const comment = `/**
+   * ${commentRecord[envKey]}
    */
-  ${envKey}: ${typeMap[valueType] || 'any'}`
-        : `${envKey}: ${typeMap[valueType] || 'any'}`
-    )
+  `
+    const keyValue = `readonly ${envKey}: ${typeMap[valueType] || 'any'}`
+
+    interfaceItem.push(comment ? comment + keyValue : keyValue)
   }
+
   if (!interfaceItem.length) return
+
   return `interface ImportMetaEnv {
   // Auto generate by env-parse
   ${interfaceItem.join('\n  ')}
