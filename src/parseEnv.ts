@@ -31,10 +31,11 @@ export function parseEnv(env: Recordable, options: Options = {}) {
           value = (0, eval)(value)
         } catch (e) {}
       }
+      if (customParser) {
+        value = (customParser && customParser(envKey, value)) || value
+      }
     }
-    if (customParser) {
-      value = (customParser && customParser(envKey, value)) || value
-    }
+
     parsedRes[envKey] = value
   }
 
