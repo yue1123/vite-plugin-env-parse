@@ -48,18 +48,18 @@ export function envParse(options: Options = {}): Plugin {
       }
     },
     configResolved(config) {
-      const { command, env } = config
+      const { command } = config
       try {
         isBuild = command === 'build'
         userConfig = config
         parsedEnv = parseEnv(config.env, { parseJson, customParser, exclude })
-        if (!isBuild && env.MODE === 'development') {
+        if (!isBuild) {
           // gen dts
           const { mode, envDir, root } = config
-          const modeFilePath = path.resolve(envDir || root, `.env.${mode}`)
-          const modeLocalFilePath = path.resolve(envDir || root, `.env.${mode}.local`)
-          const localEnvFilePath = path.resolve(envDir || root, `.env.local`)
           const baseEnvFilePath = path.resolve(envDir || root, `.env`)
+          const modeFilePath = path.resolve(envDir || root, `.env.${mode}`)
+          const localEnvFilePath = path.resolve(envDir || root, `.env.local`)
+          const modeLocalFilePath = path.resolve(envDir || root, `.env.${mode}.local`)
           const modeEnvFileContent = fs.existsSync(modeFilePath) && fs.readFileSync(modeFilePath, 'utf-8')
           const modeLocalEnvFileContent =
             fs.existsSync(modeLocalFilePath) && fs.readFileSync(modeLocalFilePath, 'utf-8')
