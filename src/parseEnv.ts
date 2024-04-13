@@ -2,6 +2,7 @@ import { Options } from './options'
 import { Recordable } from './types'
 
 type StringBoolean = 'true' | 'false'
+
 /**
  * parse loaded env
  * @param env env string record
@@ -26,10 +27,16 @@ export function parseEnv(env: Recordable, options: Options = {}) {
         // json
         try {
           value = JSON.parse(value)
-        } catch (e) {}
-        try {
-          value = (0, eval)(value)
-        } catch (e) {}
+        } catch (e) {
+          /**
+           * nonstandard json data parse
+           * @example `['item1', 'item2', 'item3']`
+           * @example `{key1:'value1',key2:"value2"}`
+           */
+          try {
+            value = (0, eval)(`(${value})`)
+          } catch (e) {}
+        }
       }
       if (customParser) {
         value = (customParser && customParser(envKey, value)) || value
