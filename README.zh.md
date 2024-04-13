@@ -35,6 +35,10 @@ export default {
 }
 ```
 
+`tsconfig.json` 文件添加 `include` 配置
+
+> 如果项目 `tsconfig.json` `include` 配置已经包含 `*.d.ts`，请忽略这一步
+
 [Example](./example)
 
 ## API

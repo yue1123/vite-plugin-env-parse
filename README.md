@@ -35,6 +35,16 @@ export default {
 }
 ```
 
+Add include configuration to the `tsconfig.json` file.
+
+> Ignore this step if the project `tsconfig.json` `include` configuration already contains `*.d.ts`
+> 
+```json
+{
+  "include": ["env.d.ts"]
+}
+```
+
 [Example](./example)
 
 ## API
