@@ -19,4 +19,9 @@ export interface Options {
    * @default 'env.d.ts'
    */
   dtsPath?: string
+  /**
+   * generate .d.ts file in build mode
+   * @default false
+   */
+  build?: boolean
 }
