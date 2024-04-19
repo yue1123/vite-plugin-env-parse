@@ -11,3 +11,6 @@ console.log(import.meta.env.VITE_APP_JSON_DATA)
 if (import.meta.env.VITE_APP_DEBUG) {
   console.log('debug mode ')
 }
+
+console.log(process.env)
+console.log(process.env.VITE_APP_API_KEY)

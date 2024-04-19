@@ -104,3 +104,7 @@ interface ImportMetaEnv {
   readonly VITE_APP_MULTILINE_DATA: string
   readonly VITE_APP_NO_COMMENT_ENV_KEY: string
 }
+
+namespace NodeJS {
+  interface ProcessEnv extends ImportMetaEnv {}
+}

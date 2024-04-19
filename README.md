@@ -6,9 +6,16 @@
 
 [简体中文](./README.zh.md)
 
-Parse env string values to correct values, not all values are strings. And automatically generate ImportMetaEnv
+Parse env string values to correct values, instead of exposing it as a string. And automatically generate ImportMetaEnv
 
 ![showcase](./screenshots/showcase.png)
+
+## ✨ Features
+
+1. Converting strings values instead of exposing it as a string
+2. And automatically generate ImportMetaEnv
+3. expose define env (Inspired by https://github.com/ElMassimo/vite-plugin-environment/blob/main/src/index.ts)
+
 
 ## 📦 Install
 
