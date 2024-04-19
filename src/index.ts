@@ -9,7 +9,7 @@ import { writeEnvInterface } from './writeEnvInterface'
 import { generateEnvInterface } from './generateEnvInterface'
 
 export function envParse(options: Options = {}): Plugin {
-  const { parseJson = true, exclude = [], dtsPath = 'env.d.ts', customParser } = options
+  const { parseJson = true, exclude = [], dtsPath = 'env.d.ts', customParser, genDtsAfterBuild = false } = options
   let parsedEnv: Record<string, any>
   let isBuild = false
   let userConfig: ResolvedConfig
@@ -53,7 +53,7 @@ export function envParse(options: Options = {}): Plugin {
         isBuild = command === 'build'
         userConfig = config
         parsedEnv = parseEnv(config.env, { parseJson, customParser, exclude })
-        if (!isBuild) {
+        if (!isBuild || genDtsAfterBuild) {
           // gen dts
           const { mode, envDir, root } = config
           const baseEnvFilePath = path.resolve(envDir || root, `.env`)

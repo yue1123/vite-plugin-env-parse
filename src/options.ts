@@ -19,4 +19,9 @@ export interface Options {
    * @default 'env.d.ts'
    */
   dtsPath?: string
+  /**
+   * if generate .d.ts file after build(to adapt uniapp miniprogram dev mode)
+   * @default false
+   */
+  genDtsAfterBuild?: boolean
 }
