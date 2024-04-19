@@ -20,8 +20,8 @@ export interface Options {
    */
   dtsPath?: string
   /**
-   * if generate .d.ts file after build(to adapt uniapp miniprogram dev mode)
+   * generate .d.ts file in build mode
    * @default false
    */
-  genDtsAfterBuild?: boolean
+  build?: boolean
 }
