@@ -20,7 +20,13 @@ export interface Options {
    */
   dtsPath?: string
   /**
-   * generate .d.ts file in build mode
+   * Enable the .d.ts file generate in dev mode
+   *
+   * @default true
+   */
+  dev?: boolean
+  /**
+   * Enable the .d.ts file generate in build mode
    * @default false
    */
   build?: boolean

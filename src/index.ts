@@ -9,7 +9,7 @@ import { writeEnvInterface } from './writeEnvInterface'
 import { generateEnvInterface } from './generateEnvInterface'
 
 export function envParse(options: Options = {}): Plugin {
-  const { parseJson = true, exclude = [], dtsPath = 'env.d.ts', customParser, build = false } = options
+  const { parseJson = true, exclude = [], dtsPath = 'env.d.ts', customParser, dev = true, build = false } = options
   let parsedEnv: Record<string, any>
   let isBuild = false
   let userConfig: ResolvedConfig
@@ -20,7 +20,6 @@ export function envParse(options: Options = {}): Plugin {
     name: 'vite-plugin-env-parse',
     enforce: 'pre',
     transform(code, id) {
-      this.addWatchFile
       if (
         !isBuild ||
         // exclude html, css and static assets for performance
@@ -53,7 +52,7 @@ export function envParse(options: Options = {}): Plugin {
         isBuild = command === 'build'
         userConfig = config
         parsedEnv = parseEnv(config.env, { parseJson, customParser, exclude })
-        if (!isBuild || build) {
+        if ((!isBuild && dev) || (isBuild && build)) {
           // gen dts
           const { mode, envDir, root } = config
           const baseEnvFilePath = path.resolve(envDir || root, `.env`)
@@ -79,7 +78,9 @@ export function envParse(options: Options = {}): Plugin {
           }
           const envInterface = generateEnvInterface(parsedEnv, envCommentRecord)
           envInterface && writeEnvInterface(path.resolve(root, dtsPath), envInterface)
-
+        }
+        if (!isBuild && dev) {
+          // this code only dev mode go into effect
           // import meta env getter proxy
           Object.defineProperty(config, 'env', {
             get() {
