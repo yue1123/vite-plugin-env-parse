@@ -5,7 +5,7 @@ import { envParse, parseLoadedEnv } from 'vite-plugin-env-parse'
 export type EnvVarDefault = string | null | undefined
 
 export type EnvVarDefaults = Record<string, EnvVarDefault>
-
+// https://github.com/ElMassimo/vite-plugin-environment/blob/main/src/index.ts
 function defineEnvVars(env: EnvVarDefaults, defineOn: string, keys: string[], defaultValues: EnvVarDefaults) {
   return keys.reduce((vars, key) => {
     const value = env[key] === undefined ? defaultValues[key] : env[key]
