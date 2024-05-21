@@ -12,6 +12,9 @@ export function writeEnvInterface(path: string, envInterface: string) {
       envInterface = `${fileContent}
 ${envInterface}`
     }
+  } else {
+    envInterface = `/// <reference types="vite/client" />
+${envInterface}`
   }
   fs.writeFileSync(path, envInterface)
 }
