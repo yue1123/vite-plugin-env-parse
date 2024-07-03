@@ -1,7 +1,7 @@
 interface ImportMetaEnv {
   // Auto generate by env-parse
   /**
-   * development local env
+   * App configuration
    */
   readonly VITE_APP_NAME: string
   /**

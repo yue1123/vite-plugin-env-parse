@@ -14,8 +14,7 @@ export function envParse(options: Options = {}): Plugin {
   let isBuild = false
   let userConfig: ResolvedConfig
   const importMetaEnvReg = /(?<![\'\"])import\.meta\.env\.([\w-]+)/gi
-  const importObjReg = /import\.meta\.env/gi
-
+  const importObjReg = /(import\.meta\.env)(?:[^.])/gi
   return {
     name: 'vite-plugin-env-parse',
     enforce: 'pre',
@@ -32,14 +31,14 @@ export function envParse(options: Options = {}): Plugin {
       }
       if (code.includes('import.meta.env')) {
         code = code
-          .replace(importMetaEnvReg, (all, envKey) => {
+          .replace(importMetaEnvReg, (matched, envKey) => {
             let val = parsedEnv[envKey]
             if (typeof val !== 'undefined') {
               return typeof val === 'string' ? `'${val}'` : JSON.stringify(val)
             }
-            return all
+            return matched
           })
-          .replace(importObjReg, () => JSON.stringify(parsedEnv))
+          .replace(importObjReg, (matched, envKey) => matched.replace(envKey, JSON.stringify(parsedEnv)))
         return {
           code,
           map: null
