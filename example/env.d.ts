@@ -1,7 +1,7 @@
 interface ImportMetaEnv {
   // Auto generate by env-parse
   /**
-   * App configuration
+   * development local env
    */
   readonly VITE_APP_NAME: string
   /**
@@ -103,4 +103,8 @@ interface ImportMetaEnv {
    */
   readonly VITE_APP_MULTILINE_DATA: string
   readonly VITE_APP_NO_COMMENT_ENV_KEY: string
+  /**
+   * Regexp
+   */
+  readonly VITE_APP_REGEXP: string
 }

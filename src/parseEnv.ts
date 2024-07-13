@@ -34,7 +34,10 @@ export function parseEnv(env: Recordable, options: Options = {}) {
            * @example `{key1:'value1',key2:"value2"}`
            */
           try {
-            value = (0, eval)(`(${value})`)
+            const temp = (0, eval)(`(${value})`)
+            if (!(temp instanceof RegExp)) {
+              value = temp
+            }
           } catch (e) {}
         }
       }
