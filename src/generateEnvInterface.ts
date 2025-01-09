@@ -32,7 +32,7 @@ export function generateEnvInterface(env: Recordable, commentRecord: Recordable<
 
   if (!interfaceItem.length) return
 
-  return `interface ImportMetaEnv {
+  return `interface AutoGenerateImportMetaEnv {
   // Auto generate by env-parse
   ${interfaceItem.join('\n  ')}
 }`

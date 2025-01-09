@@ -1,4 +1,5 @@
-interface ImportMetaEnv {
+/// <reference types="vite/client" />
+interface AutoGenerateImportMetaEnv {
   // Auto generate by env-parse
   /**
    * development local env
@@ -108,3 +109,5 @@ interface ImportMetaEnv {
    */
   readonly VITE_APP_REGEXP: string
 }
+
+interface ImportMetaEnv extends AutoGenerateImportMetaEnv {}
