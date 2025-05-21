@@ -1,6 +1,19 @@
 export type CustomTransformer = (key: string, value: string) => any
+import { type } from 'arktype'
 
-export interface Options {
+import 'vite/types/importMeta'
+
+export interface Options<V = any> {
+  /**
+   * only generate dts file
+   * @default false
+   */
+  onlyDts?: boolean
+  /**
+   * validation env value
+   * @experimental
+   */
+  validation?: type.validate<V, {}> & Partial<Record<keyof ImportMetaEnv, any>>
   /**
    * exclude parse env keys
    */

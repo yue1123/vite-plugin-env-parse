@@ -2,6 +2,8 @@
   import HelloWorld from './components/HelloWorld.vue'
   console.log('app中打印', import.meta.env.VITE_APP_DEBUG)
   console.log('app中打印env', import.meta.env)
+  const { env } = import.meta
+  console.log(env)
 </script>
 
 <template>
