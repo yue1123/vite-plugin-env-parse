@@ -1,9 +1,14 @@
 export type CustomTransformer = (key: string, value: string) => any
 import { type } from 'arktype'
-
+import { type LogLevel } from 'vite'
 import 'vite/types/importMeta'
 
 export interface Options<V = any> {
+  /**
+   * log level
+   * @default vite.logLevel
+   */
+  logLevel?: LogLevel
   /**
    * only generate dts file
    * @default false
@@ -33,14 +38,9 @@ export interface Options<V = any> {
    */
   dtsPath?: string
   /**
-   * Enable the .d.ts file generate in dev mode
+   * Enable the .d.ts file generate
    *
    * @default true
    */
-  dev?: boolean
-  /**
-   * Enable the .d.ts file generate in build mode
-   * @default false
-   */
-  build?: boolean
+  enable?: boolean
 }

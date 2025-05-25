@@ -24,7 +24,7 @@ describe('generateDTS', () => {
       VITE_OBJECT: 'An object with key-value pairs'
     }
 
-    const result = generateDTS(env, commentRecord)
+    const result = generateDTS(env, {}, commentRecord)
 
     expect(result).toContain('readonly VITE_APP_TITLE: string')
     expect(result).toContain('readonly VITE_API_URL: string')
@@ -54,7 +54,7 @@ describe('generateDTS', () => {
       SSR: 'Server-side rendering',
       VITE_APP_TITLE: 'The title of the application'
     }
-    const result = generateDTS(containExcludeEnv, commentRecord)
+    const result = generateDTS(containExcludeEnv, {}, commentRecord)
     expect(result).not.toContain('readonly MODE: string')
     expect(result).not.toContain('readonly BASE_URL: string')
     expect(result).not.toContain('readonly PROD: boolean')
@@ -68,7 +68,7 @@ describe('generateDTS', () => {
   it('should handle empty env and commentRecord', () => {
     const env = {}
     const commentRecord = {}
-    const result = generateDTS(env, commentRecord)
+    const result = generateDTS(env, {}, commentRecord)
     expect(result).toBeUndefined()
   })
 
@@ -78,7 +78,7 @@ describe('generateDTS', () => {
       VITE_API_URL: 'https://api.example.com'
     }
     const commentRecord = {}
-    const result = generateDTS(env, commentRecord)
+    const result = generateDTS(env, {}, commentRecord)
     expect(result).toContain('readonly VITE_APP_TITLE: string')
     expect(result).toContain('readonly VITE_API_URL: string')
     expect(result).toMatchSnapshot()

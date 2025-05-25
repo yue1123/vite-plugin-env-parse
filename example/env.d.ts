@@ -11,7 +11,7 @@ interface AutoGenerateImportMetaEnv {
   /**
    * Set DEBUG to true for development
    */
-  readonly VITE_APP_DEBUG: string
+  readonly VITE_APP_DEBUG: boolean
   /**
    * The base URL for the app
    */
@@ -23,7 +23,7 @@ interface AutoGenerateImportMetaEnv {
   /**
    * Database port number
    */
-  readonly VITE_APP_DB_PORT: string
+  readonly VITE_APP_DB_PORT: number
   /**
    * Database username
    */
@@ -52,7 +52,7 @@ interface AutoGenerateImportMetaEnv {
   /**
    * Enable or disable Feature Flag 2
    */
-  readonly VITE_APP_FEATURE_FLAG_2: string
+  readonly VITE_APP_FEATURE_FLAG_2: boolean
   /**
    * External services
    * URL for an external API
@@ -84,12 +84,17 @@ interface AutoGenerateImportMetaEnv {
    * JSON data
    * Example JSON data for configuration
    */
-  readonly VITE_APP_JSON_DATA: string
+  readonly VITE_APP_JSON_DATA: object
   /**
    * Nonstandard json data
    * Example JSON data for configuration
    */
-  readonly VITE_APP_NONSTANDARD_JSON_DATA: string
+  readonly VITE_APP_NONSTANDARD_JSON_DATA: object
+  /**
+   * Array data
+   * Example array data
+   */
+  readonly VITE_APP_ARRAY_DATA: string[]
   /**
    * Multiline data
    * This is a multiline value.

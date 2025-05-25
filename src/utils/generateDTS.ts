@@ -1,7 +1,7 @@
 import { Recordable } from '../types'
 
 type SupportType = 'string' | 'number' | 'boolean' | 'object' | 'array'
-const excludeKey = ['MODE', 'BASE_URL', 'PROD', 'DEV', 'SSR']
+export const excludeKey = ['MODE', 'BASE_URL', 'PROD', 'DEV', 'SSR']
 const typeMap: Recordable<SupportType> = {
   boolean: 'boolean',
   string: 'string',
@@ -19,7 +19,6 @@ export function generateDTS(env: Recordable, validationEnv: Recordable, commentR
     const value = env[envKey]
     const comment = commentRecord[envKey]
     let valueType = validationEnv[envKey] || (typeof value as SupportType)
-    console.log({ envKey, validationEnv: valueType }, '======')
 
     valueType === 'object' && Array.isArray(value) ? 'array' : typeMap[valueType] || 'any'
 

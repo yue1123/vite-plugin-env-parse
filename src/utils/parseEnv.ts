@@ -1,5 +1,6 @@
 import { Options } from '../options'
 import { Recordable } from '../types'
+import { excludeKey } from './generateDTS'
 
 function safeEval(expr: string, context: Record<string, any> = {}) {
   const contextKeys = Object.keys(context)
@@ -51,7 +52,7 @@ export function parseEnv(
   options: Pick<Options, 'onlyDts' | 'parseJson' | 'exclude' | 'customParser'> = {}
 ) {
   const { parseJson = true, exclude = [], onlyDts, customParser } = options
-  const envKeys = Object.keys(env)
+  const envKeys = Object.keys(env).filter((key) => !excludeKey.includes(key))
 
   if (onlyDts) {
     return { parsedEnv: env, parsedEnvKeys: envKeys }
