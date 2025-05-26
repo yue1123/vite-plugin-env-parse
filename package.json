@@ -10,6 +10,7 @@
     "build": "pnpm clean && tsup src/index.ts --dts --env.NODE_ENV production --format esm && pnpm clean-up",
     "clean": "rimraf dist",
     "test": "vitest",
+    "test:coverage": "vitest --coverage",
     "clean-up": "rimraf tsconfig.tsbuildinfo",
     "example:dev": "pnpm run -C example dev",
     "example:build": "pnpm run -C example build",

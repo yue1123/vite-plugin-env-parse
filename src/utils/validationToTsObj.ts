@@ -23,7 +23,6 @@ export function validationToTsObj(json: ArktypeJSONObject) {
 }
 
 function arktypeToKeyValue(value: ArktypeJSONValue): string {
-  // console.dir({ value }, { depth: 10 })
   const fallback = 'string'
   if (typeof value === 'string') {
     return value

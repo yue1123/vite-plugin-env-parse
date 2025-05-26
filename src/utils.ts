@@ -1,5 +1,3 @@
-import { group } from 'node:console'
-
 const htmlLangRE = /\.(?:html|htm)$/
 const CSS_LANGS_RE = /\.(css|less|sass|scss|styl|stylus|pcss|postcss|sss)(?:$|\?)/
 const nonJsRe = /\.json(?:$|\?)/

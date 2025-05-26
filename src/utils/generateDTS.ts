@@ -18,17 +18,19 @@ export function generateDTS(env: Recordable, validationEnv: Recordable, commentR
 
     const value = env[envKey]
     const comment = commentRecord[envKey]
-    let valueType = validationEnv[envKey] || (typeof value as SupportType)
+    let valueType = typeof value as SupportType
 
-    valueType === 'object' && Array.isArray(value) ? 'array' : typeMap[valueType] || 'any'
+    // 精准类型
+    const exactType = valueType === 'object' ? (Array.isArray(value) ? 'array' : 'object') : valueType
 
+    const dtsType = validationEnv[envKey] || typeMap[exactType] || 'any'
     const jsDocComment = comment
       ? `/**
    * ${comment}
    */
   `
       : ''
-    const keyValue = `readonly ${envKey}: ${valueType}`
+    const keyValue = `readonly ${envKey}: ${dtsType}`
 
     interfaceItem.push(jsDocComment + keyValue)
   }

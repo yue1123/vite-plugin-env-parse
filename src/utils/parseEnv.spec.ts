@@ -102,7 +102,10 @@ describe('parseEnv', () => {
   it('should handle empty env', () => {
     const env = {}
     const parsedEnv = parseEnv(env)
-    expect(parsedEnv).toEqual({})
+    expect(parsedEnv).toEqual({
+      parsedEnv: {},
+      parsedEnvKeys: []
+    })
   })
 
   it('should handle env with empty string values', () => {

@@ -35,7 +35,7 @@ interface AutoGenerateImportMetaEnv {
   /**
    * Database name
    */
-  readonly VITE_APP_DB_NAME: "aa" | "bb"
+  readonly VITE_APP_DB_NAME: "db1" | "db2"
   /**
    * API keys
    */
@@ -84,17 +84,17 @@ interface AutoGenerateImportMetaEnv {
    * JSON data
    * Example JSON data for configuration
    */
-  readonly VITE_APP_JSON_DATA: object
+  readonly VITE_APP_JSON_DATA: Record<string, any>
   /**
    * Nonstandard json data
    * Example JSON data for configuration
    */
-  readonly VITE_APP_NONSTANDARD_JSON_DATA: object
+  readonly VITE_APP_NONSTANDARD_JSON_DATA: Record<string, any>
   /**
    * Array data
    * Example array data
    */
-  readonly VITE_APP_ARRAY_DATA: string[]
+  readonly VITE_APP_ARRAY_DATA: any[]
   /**
    * Multiline data
    * This is a multiline value.
@@ -107,5 +107,6 @@ interface AutoGenerateImportMetaEnv {
    * Regexp
    */
   readonly VITE_APP_REGEXP: string
+  readonly VITE_APP_DATE: string
 }
 interface ImportMetaEnv extends AutoGenerateImportMetaEnv {}

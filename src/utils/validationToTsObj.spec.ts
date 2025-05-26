@@ -65,7 +65,7 @@ describe('validation object to ts', () => {
   it('should be a union type', () => {
     // string
     expect(validationToTsObj(typeToJson({ union: '"fasdf" | "faffsdf"' }))).toEqual({
-      union: 'faffsdf | fasdf'
+      "union": `"faffsdf" | "fasdf"`
     })
     // subtype
     expect(validationToTsObj(typeToJson({ union: 'string.alpha | string.base64' }))).toEqual({
@@ -123,9 +123,12 @@ describe('validation object to ts', () => {
   })
 
   // built-in types
-  it('should be a built-in type', () => {
+  it('built-in type should be a string', () => {
     expect(validationToTsObj(typeToJson({ builtIn: 'Date' }))).toEqual({
       builtIn: 'Date'
+    })
+    expect(validationToTsObj(typeToJson({ builtIn: 'File' }))).toEqual({
+      builtIn: 'File'
     })
     expect(validationToTsObj(typeToJson({ builtIn: 'RegExp' }))).toEqual({
       builtIn: 'RegExp'
