@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 
-import { generateDTS } from './generateDTS'
+import { generateDTS } from '../src/utils/generateDTS'
 
 describe('generateDTS', () => {
   it('should generate correct TypeScript interface', () => {

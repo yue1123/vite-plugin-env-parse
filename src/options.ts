@@ -1,13 +1,11 @@
 export type CustomTransformer = (key: string, value: string) => any
 import { type } from 'arktype'
-import { type LogLevel } from 'vite'
 
 export interface Options<V = any> {
   /**
-   * log level
-   * @default vite.logLevel
+   * show info log
    */
-  logLevel?: LogLevel
+  showInfoLog?: boolean
   /**
    * only generate dts file
    * @default false

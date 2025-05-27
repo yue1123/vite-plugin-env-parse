@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { parseEnv } from './parseEnv'
+import { parseEnv } from '../src/utils/parseEnv'
 import exp from 'constants'
 
 describe('parseEnv', () => {

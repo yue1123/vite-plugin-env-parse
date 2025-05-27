@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { ArktypeJSONObject, validationToTsObj } from './validationToTsObj'
-import { Options } from '../options'
+import { ArktypeJSONObject, validationToTsObj } from '../src/utils/validationToTsObj'
+import { Options } from '../src/options'
 import { type } from 'arktype'
 
 describe('validation object to ts', () => {

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { parseComment } from './parseComment'
+import { parseComment } from '../src/utils/parseComment'
 
 describe('parseComment', () => {
   it('should parse a comment with a single line', () => {
@@ -62,6 +62,6 @@ VITE_TEST_COMMENT="My Awesome App"`
     const comment = `# This is a comment with wrong key-value
     VITE_TEST_COMMENT=`
     const result = parseComment(comment)
-    expect(result).toEqual({ VITE_TEST_COMMENT : `This is a comment with wrong key-value` })
+    expect(result).toEqual({ VITE_TEST_COMMENT: `This is a comment with wrong key-value` })
   })
 })

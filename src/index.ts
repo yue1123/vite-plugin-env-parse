@@ -20,7 +20,8 @@ export function envParse<const V extends Partial<Record<string, string>> = any>(
     dtsPath = 'env.d.ts',
     customParser,
     enable = true,
-    validation = {}
+    validation = {},
+    showInfoLog = true
   } = options
   let parsedEnv: Record<string, any>
   let isBuild = false
@@ -28,15 +29,6 @@ export function envParse<const V extends Partial<Record<string, string>> = any>(
   const importMetaEnvReg = /(?<![\'\"])import\.meta\.env\.([\w-]+)/gi
   const importObjReg = /(import\.meta\.env)(?:[^.])/gi
 
-  // const userLogger = createLogger('info', {
-  //   prefix: '[env-parse]',
-  // })
-  // userLogger.info('vite-plugin-env-parse is deprecated, please use vite-plugin-env-parse-next instead', {
-  //   timestamp: true
-  // })
-  // userLogger.error('vite-plugin-env-parse is deprecated, please use vite-plugin-env-parse-next instead',{
-  //   timestamp: true
-  // })
   return enable
     ? {
         name: NAME,
@@ -72,6 +64,7 @@ export function envParse<const V extends Partial<Record<string, string>> = any>(
           }
         },
         configResolved(config) {
+          userConfig = config
           const { command, envDir } = config
 
           // envDir is false is disable env load
@@ -82,7 +75,7 @@ export function envParse<const V extends Partial<Record<string, string>> = any>(
 
           try {
             isBuild = command === 'build'
-            userConfig = config
+
             const { parsedEnv: _parsedEnv, parsedEnvKeys } = parseEnv(config.env, {
               onlyDts,
               parseJson,
@@ -118,15 +111,16 @@ export function envParse<const V extends Partial<Record<string, string>> = any>(
                 },
                 { paths: [], comment: {} }
               )
-              logger.success(`Loaded dotenv mode: ${mode}`)
-              logger.success(`Loaded dotenv count: ${parsedEnvKeys.length}`)
-              logger.success(`Loaded dotenv files: \n${logger.group(loadedPaths, 3)}`)
+              if (showInfoLog) {
+                logger.success(`Loaded dotenv mode: ${mode}`)
+                logger.success(`Loaded dotenv count: ${parsedEnvKeys.length}`)
+                logger.success(`Loaded dotenv files: \n${logger.group(loadedPaths, 3)}`)
+              }
               const envInterface = generateDTS(
                 parsedEnv,
                 validationToTsObj(validationJson as ArktypeJSONObject),
                 loadedComment
               )
-
               envInterface && updateEnvInterface(path.resolve(root, dtsPath), envInterface)
               // this code only dev mode go into effect
               // import meta env getter proxy

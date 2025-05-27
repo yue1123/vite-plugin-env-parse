@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 
-export function updateEnvInterface(envDTsPath: string, envInterface: string, fileSys: any = fs) {
-  const source = fileSys.existsSync(envDTsPath) ? fileSys.readFileSync(envDTsPath, 'utf-8') : ''
+export function updateEnvInterface(envDTsPath: string, envInterface: string) {
+  const source = fs.existsSync(envDTsPath) ? fs.readFileSync(envDTsPath, 'utf-8') : ''
 
   const importMetaEnvInterface = `interface ImportMetaEnv extends AutoGenerateImportMetaEnv {}`
 
@@ -30,5 +30,5 @@ export function updateEnvInterface(envDTsPath: string, envInterface: string, fil
   }
 
   // 写回文件
-  fileSys.writeFileSync(envDTsPath, updated, 'utf-8')
+  fs.writeFileSync(envDTsPath, updated, 'utf-8')
 }
