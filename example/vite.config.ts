@@ -7,12 +7,21 @@ export default defineConfig(() => {
     plugins: [
       vue(),
       envParse({
-        validation: {
-          VITE_APP_NAME: 'string',
-          VITE_APP_DB_NAME: '"db1" | "db2"'
-        }
+        castType: {
+          json: false
+        },
+        // generateDts:{}
+        // buildEnable: true,
+        // validation: {
+        //   schema: {
+        //     VITE_APP_NAME: 'number',
+        //     VITE_APP_DB_NAME: '"db1" | "db2"'
+        //   },
+        //   keepBaseline: true
+        // }
       })
     ],
+    // envDir: './env',
     build: {
       sourcemap: true
     }

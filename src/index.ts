@@ -1,150 +1,147 @@
 import fs from 'node:fs'
-import path from 'node:path'
-import { type Plugin, type ResolvedConfig } from 'vite'
-import { parseComment } from './utils/parseComment'
-import { isHTMLRequest, isCSSRequest, isNonJsRequest, logger } from './utils'
-import { type Options } from './options'
-import { parseEnv } from './utils/parseEnv'
-import { updateEnvInterface } from './utils/updateEnvInterface'
-import { generateDTS } from './utils/generateDTS'
+import { cwd } from 'node:process'
+import { type Plugin, mergeConfig, loadEnv, normalizePath } from 'vite'
+import { WithDefaultOptions, type Options } from './options'
 import { ArktypeJSONObject, validationToTsObj } from './utils/validationToTsObj'
-import { type } from 'arktype'
-import { Recordable } from './types'
+import { defaultOptions } from './defaultOptions'
+import { ParsedEnvFileResult, parseEnvFile } from './utils/parseEnvFile'
+import { relative, resolve } from 'node:path'
+import { castEnvType } from './utils/castEnvType'
+import { ArkError, type } from 'arktype'
+import { logger } from './utils'
+import { generateDTS } from './utils/generateDTS'
+import { updateEnvInterface } from './utils/updateEnvInterface'
 
 const NAME = 'vite-plugin-env-parse'
 export function envParse<const V extends Partial<Record<string, string>> = any>(options: Options<V> = {}): Plugin {
   const {
-    parseJson = true,
-    onlyDts = false,
-    exclude = [],
-    dtsPath = 'env.d.ts',
-    customParser,
-    enable = true,
-    validation = {},
-    showInfoLog = true
-  } = options
-  let parsedEnv: Record<string, any>
-  let isBuild = false
-  let userConfig: ResolvedConfig
-  const importMetaEnvReg = /(?<![\'\"])import\.meta\.env\.([\w-]+)/gi
-  const importObjReg = /(import\.meta\.env)(?:[^.])/gi
+    logLevel,
+    generateDts: { devEnable, buildEnable, path: dtsPath },
+    castType,
+    validation: { schema, strictMode, keepBaseline }
+  } = mergeConfig(defaultOptions, options) as WithDefaultOptions<Options<V>>
 
-  return enable
-    ? {
-        name: NAME,
-        enforce: 'pre',
-        transform(code, id) {
-          const { envDir } = userConfig
+  return {
+    name: NAME,
+    enforce: 'pre',
+    config(config, env) {
+      if (config.envDir === false) return
 
-          if (
-            envDir === false ||
-            !isBuild ||
-            // exclude html, css and static assets for performance
-            isHTMLRequest(id) ||
-            isCSSRequest(id) ||
-            isNonJsRequest(id) ||
-            userConfig.assetsInclude(id)
-          ) {
-            return
-          }
-          if (code.includes('import.meta.env')) {
-            code = code
-              .replace(importMetaEnvReg, (matched, envKey) => {
-                let val = parsedEnv[envKey]
-                if (typeof val !== 'undefined') {
-                  return typeof val === 'string' ? `'${val}'` : JSON.stringify(val)
-                }
-                return matched
-              })
-              .replace(importObjReg, (matched, envKey) => matched.replace(envKey, JSON.stringify(parsedEnv)))
+      const { root = cwd(), envPrefix = 'VITE_', envDir = './' } = config
+      const resolvedRoot = normalizePath(root)
+      const { command, mode, isPreview } = env
+      const resolvedEnvDir = normalizePath(resolve(resolvedRoot, envDir))
+      const isDev = command === 'serve' && !isPreview && [process.env.NODE_ENV, mode].includes('development')
+      const isBuild = command === 'build' && [process.env.NODE_ENV, mode].includes('production')
+
+      const validator = type(schema as any)
+      const validationJson = validator.toJSON()
+      const loadedEnv = loadEnv(mode, resolvedEnvDir, envPrefix)
+      const { castedEnv, castedEnvKeys } = castEnvType(loadedEnv, castType)
+      const enableGenerateDTS = isDev ? devEnable : isBuild && buildEnable
+
+      const envPaths = [`.env`, `.env.local`, `.env.${mode}`, `.env.${mode}.local`]
+
+      const {
+        paths: loadedPaths,
+        parsedEnvs,
+        group: parsedEnvsGroup
+      } = envPaths.reduce<{
+        paths: string[]
+        parsedEnvs: ParsedEnvFileResult
+        group: Record<string, ParsedEnvFileResult>
+      }>(
+        (res, _filePath) => {
+          const { paths, parsedEnvs, group } = res
+          const filePath = resolve(resolvedEnvDir, _filePath)
+          const relativeFilePath = relative(resolvedRoot, filePath)
+
+          if (fs.existsSync(filePath)) {
+            const content = fs.readFileSync(filePath, 'utf-8')
+            const parsedEnvFile = parseEnvFile(content, relativeFilePath)
             return {
-              code,
-              map: null
+              paths: paths.concat(relative(root, filePath)),
+              parsedEnvs: { ...parsedEnvs, ...parsedEnvFile },
+              group: {
+                ...group,
+                [relativeFilePath]: parsedEnvFile
+              }
             }
           }
+          return res
         },
-        configResolved(config) {
-          userConfig = config
-          const { command, envDir } = config
+        { paths: [], parsedEnvs: {}, group: {} }
+      )
 
-          // envDir is false is disable env load
-          if (envDir === false) return
-          const validator = type(validation as any)
+      const define = Object.fromEntries(
+        Object.entries(castedEnv).map(([key, value]) => {
+          return [`import.meta.env.${key}`, JSON.stringify(value)] // Ensure string values are quoted
+        })
+      )
 
-          const validationJson = validator.toJSON()
+      if (enableGenerateDTS) {
+        // generate dts
+        const envInterface = generateDTS(
+          loadedEnv,
+          validationToTsObj(validationJson as ArktypeJSONObject),
+          Object.fromEntries(Object.values(parsedEnvs).map((item) => [item.key, item.comment]))
+        )
 
-          try {
-            isBuild = command === 'build'
+        envInterface && updateEnvInterface(resolve(root, dtsPath), envInterface)
+      }
 
-            const { parsedEnv: _parsedEnv, parsedEnvKeys } = parseEnv(config.env, {
-              onlyDts,
-              parseJson,
-              customParser,
-              exclude
-            })
-            parsedEnv = _parsedEnv
+      if (logLevel === 'info') {
+        logger.success(`Loaded dotenv mode: ${mode}`)
+        logger.success(`Loaded dotenv count: ${castedEnvKeys.length}`)
+        logger.success(`Loaded dotenv files: \n${logger.group(loadedPaths, 3)}`)
+      }
 
-            if (!isBuild) {
-              const { mode, envDir, root } = config
-              const envPaths = [
-                path.resolve(envDir || root, `.env`),
-                path.resolve(envDir || root, `.env.local`),
-                path.resolve(envDir || root, `.env.${mode}`),
-                path.resolve(envDir || root, `.env.${mode}.local`)
-              ]
-
-              const { paths: loadedPaths, comment: loadedComment } = envPaths.reduce<{
-                paths: string[]
-                comment: Recordable<string, string>
-              }>(
-                (res, filePath) => {
-                  const { paths, comment } = res
-                  if (fs.existsSync(filePath)) {
-                    const content = fs.readFileSync(filePath, 'utf-8')
-                    const parsedComment = parseComment(content)
-                    return {
-                      paths: paths.concat(path.relative(root, filePath)),
-                      comment: { ...comment, ...parsedComment }
-                    }
-                  }
-                  return res
-                },
-                { paths: [], comment: {} }
+      const parsedEnvsGroupEntries = Object.entries(parsedEnvsGroup)
+      if (keepBaseline && parsedEnvsGroupEntries.length) {
+        const baseline = parsedEnvsGroup['.env'] || parsedEnvsGroup['.env.local']
+        // Check if .env files are present in the project root
+        if (!baseline) {
+          console.warn(
+            `keepBaseline is enabled, but no .env file found in the project root.\n` +
+              `To ensure consistent environment variables across different environments, please create a .env file in the project root.\n`
+          )
+        } else {
+          parsedEnvsGroupEntries.forEach(([filePath, parsedEnvs]) => {
+            if (filePath === '.env') return // Skip baseline files
+            const missingKeys = Object.keys(parsedEnvs).filter((key) => !(key in baseline))
+            if (missingKeys.length) {
+              console.warn(
+                `The following environment variables are defined in ${filePath} but not in the baseline .env file:\n` +
+                  missingKeys.map((key) => `- ${key}`).join('\n') +
+                  `\nTo ensure consistent environment variables across different environments, please add these keys to the .env file.\n`
               )
-              if (showInfoLog) {
-                logger.success(`Loaded dotenv mode: ${mode}`)
-                logger.success(`Loaded dotenv count: ${parsedEnvKeys.length}`)
-                logger.success(`Loaded dotenv files: \n${logger.group(loadedPaths, 3)}`)
-              }
-              const envInterface = generateDTS(
-                parsedEnv,
-                validationToTsObj(validationJson as ArktypeJSONObject),
-                loadedComment
-              )
-              envInterface && updateEnvInterface(path.resolve(root, dtsPath), envInterface)
-              // this code only dev mode go into effect
-              // import meta env getter proxy
-              Object.defineProperty(config, 'env', {
-                get() {
-                  return parsedEnv
-                }
-              })
             }
-
-            if (!onlyDts) {
-              const out = validator(parsedEnv)
-              if (out instanceof type.errors) {
-                logger.error('Type Error:\n' + logger.group(out.summary.split('\n')))
-              }
-            }
-          } catch (error: any) {
-            logger.error(error.message)
-          }
+          })
         }
       }
-    : {
-        name: NAME
+      
+      if (Object.keys(schema).length) {
+        const out: ArkError[] = validator(castedEnv)
+        out.forEach((error) => {
+          const path = error.path[0] as string
+          if (path) {
+            const envRaw = parsedEnvs[path]
+            console.log(`${envRaw['__file']}(${envRaw['line']},${envRaw['line']})`, error.message || error.expected)
+          }
+        })
+        if (strictMode && out instanceof type.errors) {
+          console.log('\r')
+          logger.error('Environment variable validation failed. Exiting process.')
+          process.exit(1)
+        }
       }
+      return {
+        envDir: false,
+        define
+      }
+    }
+    // load(){}
+  }
 }
 
-export { parseEnv as parseLoadedEnv }
+export { castEnvType }

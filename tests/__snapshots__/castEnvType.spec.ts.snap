@@ -1,0 +1,42 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`castEnvType > should parse env variables correctly 1`] = `
+{
+  "VITE_APP_API_URL": "https://api.example.com",
+  "VITE_APP_ARRAY": [
+    "item1",
+    "item2",
+    "item3",
+  ],
+  "VITE_APP_BASE": "/base/",
+  "VITE_APP_BOOLEAN": false,
+  "VITE_APP_CONFIG": {
+    "key1": "value1",
+    "key2": "value2",
+  },
+  "VITE_APP_CUSTOM": "customValue",
+  "VITE_APP_DATE": "2023-10-01T00:00:00Z",
+  "VITE_APP_DEBUG": true,
+  "VITE_APP_EMPTY": "",
+  "VITE_APP_FEATURES": [
+    "feature1",
+    "feature2",
+  ],
+  "VITE_APP_JSON": {
+    "key": "value",
+  },
+  "VITE_APP_JSON_LIKE": {
+    "key": "value",
+  },
+  "VITE_APP_NAME": "MyApp",
+  "VITE_APP_NULL": null,
+  "VITE_APP_NUMBER": 42,
+  "VITE_APP_OBJECT": {
+    "key": "value",
+  },
+  "VITE_APP_PORT": 3000,
+  "VITE_APP_REGEXP": "/^\\d+$/",
+  "VITE_APP_UNDEFINED": undefined,
+  "VITE_APP_VERSION": "1.0.0",
+}
+`;

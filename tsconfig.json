@@ -15,6 +15,6 @@
     "declarationDir": "dist",
     "declaration": true
   },
-  "include": ["src/*.ts", "src/*.d.ts", "src/utils/parseComment.ts", "src/utils/parseEnv.ts", "src/utils/updateEnvInterface.ts"],
+  "include": ["src/*.ts", "src/*.d.ts", "src/utils/parseEnvFile.ts", "src/utils/castEnvType.ts", "src/utils/updateEnvInterface.ts"],
   "exclude": ["dist/**/*", "node_modules", "test/**/*", "example/**/*"]
 }

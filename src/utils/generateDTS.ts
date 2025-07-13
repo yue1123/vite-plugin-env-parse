@@ -1,15 +1,13 @@
-import { Recordable } from '../types'
-
 type SupportType = 'string' | 'number' | 'boolean' | 'object' | 'array'
 export const excludeKey = ['MODE', 'BASE_URL', 'PROD', 'DEV', 'SSR']
-const typeMap: Recordable<SupportType> = {
+const typeMap: Record<SupportType, string> = {
   boolean: 'boolean',
   string: 'string',
   number: 'number',
   array: 'any[]',
   object: 'Record<string, any>'
 }
-export function generateDTS(env: Recordable, validationEnv: Recordable, commentRecord: Recordable<string, string>) {
+export function generateDTS(env: Record<string, any>, validationEnv: Record<string, any>, commentRecord: Record<string, string>) {
   let interfaceItem: string[] = []
 
   // console.log(env)

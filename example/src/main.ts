@@ -3,6 +3,11 @@ import './style.css'
 import App from './App.vue'
 createApp(App).mount('#app')
 
+console.log(
+  import.meta.env.VITE_APP_BOOLEAN,
+  import.meta.env.VITE_APP_PROCESS_ENVVVVVVVVVVVVVVVVVVVVVV,
+  '============='
+)
 console.log('js 文件中输出')
 const a = import.meta.env.SSR ? 'ssr' : 'spa'
 console.log(a)

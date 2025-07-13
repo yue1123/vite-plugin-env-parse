@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "VITE_APP_PROCESS_ENVVVVVVVVVVVVVVVVVVVVVV=100000 vite",
     "build": "vue-tsc && vite build",
     "preview": "vite preview"
   },

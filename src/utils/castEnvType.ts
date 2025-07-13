@@ -1,12 +1,16 @@
-import { Options } from '../options'
-import { Recordable } from '../types'
+import { WithDefaultOptions } from '../options'
 import { excludeKey } from './generateDTS'
 
+/**
+ * Safely evaluate a JavaScript expression in a limited context.
+ * @param expr The expression to evaluate.
+ * @param context The context in which to evaluate the expression.
+ * @returns The result of the evaluated expression.
+ */
 function safeEval(expr: string, context: Record<string, any> = {}) {
   const contextKeys = Object.keys(context)
   const contextValues = Object.values(context)
 
-  // 构造受限函数体，屏蔽全局对象
   const func = new Function(...contextKeys, `"use strict"; return (${expr});`)
 
   return func(...contextValues)
@@ -44,27 +48,26 @@ function isLikelyJson(str: string) {
 }
 
 /**
- * parse loaded env
- * @param env env string record
+ * Cast environment variable types.
+ * @param env The environment variables to cast.
+ * @param options Options for casting.
+ * @returns The casted environment variables.
  */
-export function parseEnv(
-  env: Recordable = {},
-  options: Pick<Options, 'onlyDts' | 'parseJson' | 'exclude' | 'customParser'> = {}
-) {
-  const { parseJson = true, exclude = [], onlyDts, customParser } = options
+export function castEnvType(env: Record<string, any> = {}, options: WithDefaultOptions['castType']) {
+  const { exclude, json, transformer, enabled } = options
   const envKeys = Object.keys(env).filter((key) => !excludeKey.includes(key))
 
-  if (onlyDts) {
-    return { parsedEnv: env, parsedEnvKeys: envKeys }
+  if (!enabled) {
+    return { castedEnv: env, castedEnvKeys: envKeys }
   }
 
-  const parsedEnv: Recordable = {}
-  const parsedEnvKeys: string[] = []
+  const castedEnv: Record<string, any> = {}
+  const castedEnvKeys: string[] = []
   for (const envKey of envKeys) {
     let value = env[envKey]
 
-    if (exclude.includes(envKey)) {
-      parsedEnv[envKey] = value
+    if (exclude.some((pattern) => (typeof pattern === 'string' ? pattern === envKey : pattern.test(envKey)))) {
+      castedEnv[envKey] = value
       continue
     }
 
@@ -73,19 +76,19 @@ export function parseEnv(
       if (typeof value === 'string') {
         value = parseNumber(value) // number
         if (typeof value === 'string') {
-          if (parseJson && isLikelyJson(value)) {
+          if (json && isLikelyJson(value)) {
             value = parseJsonValue(value) // json
           }
         }
       }
-      if (customParser) {
-        value = customParser(envKey, value)
+      if (transformer && typeof transformer === 'function') {
+        value = transformer(envKey, value)
       }
     }
 
-    parsedEnvKeys.push(envKey)
-    parsedEnv[envKey] = value
+    castedEnvKeys.push(envKey)
+    castedEnv[envKey] = value
   }
 
-  return { parsedEnv, parsedEnvKeys }
+  return { castedEnv, castedEnvKeys }
 }
