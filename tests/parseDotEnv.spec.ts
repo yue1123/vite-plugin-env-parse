@@ -8,6 +8,7 @@ VITE_TEST_COMMENT="My Awesome App"`
     const result = parseEnvFile(comment)
     expect(result).toEqual({
       VITE_TEST_COMMENT: {
+        __file: '.env',
         column: 1,
         comment: 'This is a comment',
         key: 'VITE_TEST_COMMENT',
@@ -23,6 +24,7 @@ VITE_TEST_COMMENT="My Awesome App"`
     const result = parseEnvFile(comment)
     expect(result).toEqual({
       VITE_TEST_COMMENT: {
+        __file: '.env',
         key: 'VITE_TEST_COMMENT',
         comment: `This is a comment line 1\n   * This is a comment line 2`,
         line: 3,
@@ -36,6 +38,7 @@ VITE_TEST_COMMENT="My Awesome App"`
     const result = parseEnvFile(comment)
     expect(result).toEqual({
       VITE_APP_NO_COMMENT_ENV_KEY: {
+        __file: '.env',
         column: 1,
         comment: '',
         key: 'VITE_APP_NO_COMMENT_ENV_KEY',
@@ -50,6 +53,7 @@ VITE_TEST_COMMENT="My Awesome App"`
     const result = parseEnvFile(comment)
     expect(result).toEqual({
       VITE_TEST_COMMENT: {
+        __file: '.env', 
         key: 'VITE_TEST_COMMENT',
         comment: `This is a comment with special characters: !@#$%^&*()`,
         line: 2,
@@ -64,6 +68,7 @@ VITE_TEST_COMMENT="My Awesome App"`
     const result = parseEnvFile(comment)
     expect(result).toEqual({
       VITE_TEST_COMMENT: {
+        __file: '.env',
         column: 5,
         comment: 'This is a comment with multiple # characters',
         key: 'VITE_TEST_COMMENT',
@@ -91,6 +96,7 @@ VITE_TEST_COMMENT="My Awesome App"`
     const result = parseEnvFile(comment)
     expect(result).toEqual({
       VITE_TEST_COMMENT: {
+        __file: '.env',
         key: 'VITE_TEST_COMMENT',
         comment: 'This is a comment with wrong key-value',
         line: 2,
