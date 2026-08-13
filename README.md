@@ -1,3 +1,5 @@
+
+
 ![showcase](https://socialify.git.ci/yue1123/vite-plugin-env-parse/image?description=1&forks=1&issues=1&name=1&owner=1&pulls=1&stargazers=1&theme=Auto)
 
 [简体中文](./README.zh.md)
@@ -71,6 +73,8 @@ export default defineConfig(({ mode }) => {
 | `parseJson`    | `boolean`           | Whether to parse JSON strings into JSON objects. Defaults to `true`. Optional.     |
 | `customParser` | `CustomTransformer` | A custom transformer function for parsing environment variables. Optional.         |
 | `dtsPath`      | `string`            | The file path for generating the `.d.ts` file. Defaults to `'env.d.ts'`. Optional. |
+| `dev`        | `boolean`           | Enable the `.d.ts` file generation in dev mode. Defaults to `true`. Optional.      |
+| `build`      | `boolean`           | Enable the `.d.ts` file generation in build mode. Defaults to `false`. Optional.   |
 
 ## License
 
